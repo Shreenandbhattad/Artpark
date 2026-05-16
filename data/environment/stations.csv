@@ -1,0 +1,4 @@
+station_id,station_name,lat,lon,elevation_m
+S001,Bangalore Central,12.9716,77.5946,920
+S002,Hyderabad Begumpet,17.4475,78.4675,545
+S003,Pune Lohegaon,18.5821,73.9197,560

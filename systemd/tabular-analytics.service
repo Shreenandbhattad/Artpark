@@ -1,0 +1,19 @@
+[Unit]
+Description=Tabular Analytics service (docker compose)
+Requires=docker.service
+After=docker.service network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/tabular-analytics
+EnvironmentFile=/opt/tabular-analytics/.env.aws
+ExecStartPre=/usr/bin/docker compose --env-file /opt/tabular-analytics/.env.aws pull
+ExecStart=/usr/bin/docker compose --env-file /opt/tabular-analytics/.env.aws up -d
+ExecStop=/usr/bin/docker compose --env-file /opt/tabular-analytics/.env.aws down
+TimeoutStartSec=120
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install ruff
+      - run: ruff check app/
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: install deps
+        run: pip install -r app/requirements.txt
+      - name: run tests
+        run: pytest app/tests/ -v
+        env:
+          DOMAIN: environment
+          DATA_ROOT: ./data
+          PROVIDER: mock
+          IMAGE_TAG: ci-test
+
+  build-push:
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          build-args: |
+            IMAGE_TAG=${{ github.sha }}
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}:latest
+
+  deploy-staging:
+    needs: build-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: write staging env
+        run: |
+          cat > .env.localhost <<EOF
+          IMAGE=ghcr.io/${{ github.repository }}:${{ github.sha }}
+          IMAGE_TAG=${{ github.sha }}
+          DOMAIN=environment
+          PROVIDER=mock
+          DATA_VOLUME=./data
+          HTTP_PORT=8080
+          HTTPS_PORT=8443
+          GRAFANA_PORT=3000
+          GRAFANA_PASSWORD=admin
+          LOG_LEVEL=INFO
+          CACHE_TTL=3600
+          EOF
+      - name: generate certs
+        run: bash certs/generate-certs.sh
+      - name: docker login
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: deploy localhost
+        run: bash deploy.sh localhost

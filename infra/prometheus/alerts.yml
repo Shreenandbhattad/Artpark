@@ -1,0 +1,36 @@
+groups:
+  - name: tabular-analytics
+    rules:
+      - alert: ServiceDown
+        expr: up{job="tabular-analytics"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "tabular-analytics is unreachable"
+          description: "Prometheus cannot scrape /metrics. Check docker ps and uvicorn logs."
+          runbook_url: "See RUNBOOK.md#service-down"
+
+      - alert: HighDegradedResponseRate
+        expr: >
+          (
+            rate(analytics_response_quality_total{quality="degraded"}[5m])
+            /
+            rate(analytics_response_quality_total[5m])
+          ) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "LLM responses degraded above 5%"
+          description: "{{ $value | humanizePercentage }} of /query responses have value=null. Check LLM provider."
+          runbook_url: "See RUNBOOK.md#degraded-responses"
+
+      - alert: HighQueryLatency
+        expr: histogram_quantile(0.95, rate(analytics_request_duration_seconds_bucket{endpoint="/query"}[5m])) > 10
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "P95 query latency over 10s"
+          description: "Check analytics_llm_duration_seconds for which LLM pass is slow."

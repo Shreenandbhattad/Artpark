@@ -1,0 +1,21 @@
+[project]
+name = "tabular-analytics"
+version = "0.1.0"
+description = "natural-language tabular analytics service"
+requires-python = ">=3.10"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "requests",
+    "python-json-logger",
+    "prometheus-client",
+]
+
+[tool.ruff]
+select = ["E", "F", "I"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

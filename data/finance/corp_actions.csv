@@ -1,0 +1,4 @@
+ticker,date,type,amount,notes
+INFY,2026-04-10,dividend,35.00,interim dividend ex-date; source_a applied, source_b did not
+TCS,2026-04-22,dividend,75.00,interim dividend ex-date (outside file range)
+RELIANCE,2026-04-09,bonus,0,1:1 bonus issue announced; not in price effect yet
