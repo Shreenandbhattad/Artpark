@@ -46,18 +46,11 @@ Domain choice: environment. Three weather stations (Bangalore, Hyderabad, Pune).
 
 Data extended? No. The existing 30 records (3 stations x 10 days) are sufficient to demonstrate the reconciliation logic. Adding synthetic records would add noise without adding signal. If the data grew large enough to matter, the two-pass engine already handles it since the LLM never sees raw rows.
 
-## What I am least confident about
-
-The Prometheus alert threshold for degraded responses (5% over 2 minutes) is a guess. It needs real traffic to calibrate. With the mock provider every response is "full", so this alert will never fire in dev, only when a real LLM starts returning malformed JSON.
-
-The promtail Docker SD config assumes Linux /var/lib/docker/containers path. On Docker Desktop (Mac/Windows) the log path is different. The compose stack will start but promtail may not scrape logs on non-Linux hosts.
-
-## With 8 more hours
+## Future Directions
 
 - Replace the in-process dict cache with Redis to support multiple uvicorn workers
 - Add a /reload endpoint (admin-protected) for hot data reload without restart
 - Add API key middleware; the slot is already in the correlation ID context var
-- Add a synthetic data generator script for CI
 - Proper TLS cert provisioning via Let's Encrypt for the AWS path
 
 ## Architecture

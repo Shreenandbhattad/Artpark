@@ -10,8 +10,8 @@ class CtxFilter(logging.Filter):
 
 def setup_logging(level: str = "INFO") -> None:
     try:
-        from pythonjsonlogger import jsonlogger
-        fmt = jsonlogger.JsonFormatter(
+        from pythonjsonlogger.json import JsonFormatter
+        fmt = JsonFormatter(
             "%(asctime)s %(levelname)s %(name)s %(message)s %(correlation_id)s %(query_id)s"
         )
     except ImportError:

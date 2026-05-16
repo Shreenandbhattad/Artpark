@@ -27,8 +27,7 @@ DATA, DATA_VERSION = load_domain(DOMAIN, DATA_ROOT)
 cache.set_version(DATA_VERSION)
 PROVIDER = get_provider()
 
-import time as _t
-metrics.data_version_info.labels(domain=DOMAIN).set(_t.time())
+metrics.data_version_info.labels(domain=DOMAIN).set(time.time())
 
 log.info("startup complete", extra={"domain": DOMAIN, "version": DATA_VERSION, "provider": type(PROVIDER).__name__})
 
