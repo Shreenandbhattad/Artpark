@@ -1,0 +1,10 @@
+station_id,date,temp_c,humidity_pct,source
+S001,2026-04-01,24.6,67.5,satellite
+S001,2026-04-02,25.2,65.0,satellite
+S001,2026-04-03,26.1,63.8,satellite
+S002,2026-04-01,32.1,45.2,satellite
+S002,2026-04-02,31.8,46.0,satellite
+S002,2026-04-03,33.0,44.5,satellite
+S003,2026-04-01,28.4,55.1,satellite
+S003,2026-04-02,29.0,54.3,satellite
+S003,2026-04-03,27.9,56.2,satellite
